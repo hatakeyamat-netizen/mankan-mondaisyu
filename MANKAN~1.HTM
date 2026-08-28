@@ -3490,11 +3490,14 @@ function renderHouse(){
  if(rl&&nextRep()<0){
   /* 修理がすべて終わったら「飾りつけ」リストに切り替える */
   rl.innerHTML='<div class="repHd">🎀 飾りつけ（'+dCount()+'/'+DECOR.length+
-   '）<span>家が完成したあとのお楽しみ。1つずつ庭がにぎやかになります</span></div>';
+   ' 完了）<span>'+(dCount()===DECOR.length
+    ? 'すべて飾り終えました。おつかれさまでした！'
+    : '家が完成したあとのお楽しみ。1つずつ庭がにぎやかになります')+'</span></div>';
   const nx=nextDec();
   DECOR.forEach((r,i)=>{
    const fin=dDone(i),rdy=!fin&&i===nx&&canDoD(i),cur=!fin&&i===nx;
-   if(!fin&&!cur&&i>nx+2)return;
+   if(fin)return;                      /* 終わった飾りも並べない */
+   if(!cur&&i>nx+2)return;
    const d=document.createElement('div');
    d.className='rep'+(fin?' fin':(rdy?' rdy':''));
    let cost='';
@@ -3521,11 +3524,14 @@ function renderHouse(){
    rl.appendChild(d);
   });
  }else if(rl){
-  rl.innerHTML='';
   const nx=nextRep();
+  /* 終わった修理は並べない。進捗は見出しの「n/18 完了」だけで示す */
+  rl.innerHTML='<div class="repHd">🔨 おうちの修理（'+rCount()+'/'+REPAIRS.length+
+   ' 完了）<span>いま取りかかれるものと、次の候補だけを表示しています</span></div>';
   REPAIRS.forEach((r,i)=>{
    const fin=rDone(i),rdy=!fin&&i===nx&&canDo(i),cur=!fin&&i===nx;
-   if(!fin&&!cur&&i>nx+2)return;
+   if(fin)return;
+   if(!cur&&i>nx+2)return;
    const d=document.createElement('div');
    d.className='rep'+(fin?' fin':(rdy?' rdy':''));
    let cost='';
@@ -3593,11 +3599,20 @@ function mlist(){
  });
 }
 function resetAll(){
- if(!confirm('すべての記録を消して最初からやり直しますか？'))return;
+ if(!confirm('すべての記録を消して最初からやり直しますか？\n\n'+
+  '・全'+D.length+'章の解答\n'+
+  '・XP・レベル・称号\n'+
+  '・まちがい復習リストとまちがえた回数\n'+
+  '・資材とおうちの修理・飾りつけ\n\n'+
+  'これらがすべて消えて、最初の状態に戻ります。'))return;
  S.xp=0;S.correct=0;S.wrong=0;S.combo=0;S.maxCombo=0;S.ans={};S.revAns={};S.wrongSet.clear();
+ /* v4で足した「一度解いたか」と「まちがえた回数」も必ず消す。
+    ここを忘れると全問が練習モード扱いになり、解き直してもXPも資材も入らなくなる。 */
+ S.seen.clear();S.miss={};
  S.mat=[0,0,0,0];S.rep=0;S.dec=0;S.newDec=-1;S.announced=-1;
+ S.ch=0;
  lastLv=1;hud();chips();body();scrollTo(0,0);renderRev();renderHouse();mlist();refreshCode();save();
- toast('記録をリセットしました');
+ toast('記録をリセットしました。最初から始められます');
 }
 
 /* ================= nav ================= */
