@@ -135,7 +135,7 @@ p.vs{font-size:11.5px;color:var(--sub);line-height:1.6;margin-bottom:12px}
 /* ===== tower ===== */
 #houseWrap{background:#0a1428;border:1px solid var(--line);border-radius:14px;
  overflow:hidden;margin-bottom:12px;position:relative}
-#decor{position:absolute;inset:0;pointer-events:none;z-index:3}
+#decor{position:absolute;left:0;top:0;width:100%;height:0;padding-bottom:55.76%;pointer-events:none;z-index:3}
 #decor i{position:absolute;font-style:normal;line-height:1;
  font-size:clamp(19px,5.6vw,32px);transform:translate(-50%,-50%);
  filter:drop-shadow(0 2px 5px rgba(0,0,0,.5))}
@@ -2909,7 +2909,13 @@ function doDecor(i){
   setTimeout(()=>{burst(200,C_GOLD);sfxLv();
    toast('🌈 おうちも庭も完璧です！ここまでよく続けましたね');},700);
  }
- hud();renderHouse();save();
+ hud();renderHouse();save();seeHouse();
+}
+function seeHouse(){
+ const w=document.getElementById("houseWrap");
+ if(!w||!w.scrollIntoView)return;
+ try{w.scrollIntoView({behavior:"smooth",block:"center"})}
+ catch(e){w.scrollIntoView(true)}
 }
 function renderDecor(){
  const w=document.getElementById('decor');
@@ -3591,7 +3597,7 @@ function doRepair(i){
   setTimeout(()=>{burst(180,C_GOLD);sfxLv();
    toast('🎉 家が完成しました！家族が心から感謝しています');},700);
  }
- hud();renderHouse();save();
+ hud();renderHouse();save();seeHouse();
 }
 /* --- アンロック通知 --- */
 function checkUnlock(){
